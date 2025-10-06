@@ -4,6 +4,8 @@ import { Vegetable } from '../entities/Vegetable';
 import { Hazard } from '../entities/Hazard';
 import { Obstacle } from '../entities/Obstacle';
 import { Collectible } from '../entities/Collectible';
+import { Enemy } from '../entities/Enemy';
+import { PowerUp } from '../entities/PowerUp';
 import { LevelManager } from '../systems/LevelManager';
 import { GAME_CONSTANTS } from '../config';
 
@@ -21,6 +23,8 @@ export class GameScene extends Phaser.Scene {
   private hazards: Hazard[] = [];
   private obstacles: Obstacle[] = [];
   private collectibles: Collectible[] = [];
+  private enemies: any[] = []; // Enemy instances
+  private powerups: any[] = []; // PowerUp instances
 
   private levelManager!: LevelManager;
   private keysCollected: number = 0;
@@ -219,11 +223,15 @@ export class GameScene extends Phaser.Scene {
     this.hazards.forEach(h => h.destroy());
     this.obstacles.forEach(o => o.destroy());
     this.collectibles.forEach(c => c.destroy());
+    this.enemies.forEach(e => e.destroy());
+    this.powerups.forEach(p => p.destroy());
 
     this.vegetables = [];
     this.hazards = [];
     this.obstacles = [];
     this.collectibles = [];
+    this.enemies = [];
+    this.powerups = [];
     this.keysCollected = 0;
 
     const level = this.levelManager.getCurrentLevel();
@@ -258,6 +266,20 @@ export class GameScene extends Phaser.Scene {
       const collectible = new Collectible(this, c.x, c.y, c.type);
       collectible.sprite.setDepth(40);
       this.collectibles.push(collectible);
+    });
+
+    // Spawn enemies
+    level.enemies.forEach(e => {
+      const enemy = new Enemy(this, e.x, e.y, e.type, e.waypoints);
+      enemy.sprite.setDepth(35);
+      this.enemies.push(enemy);
+    });
+
+    // Spawn power-ups
+    level.powerups.forEach(p => {
+      const powerup = new PowerUp(this, p.x, p.y, p.type);
+      powerup.sprite.setDepth(45);
+      this.powerups.push(powerup);
     });
 
     // Update UI
@@ -309,6 +331,14 @@ export class GameScene extends Phaser.Scene {
 
     this.player.update(input);
 
+    // Update enemies
+    const playerPos = this.player.getPosition();
+    this.enemies.forEach(enemy => {
+      if (enemy.isAlive()) {
+        enemy.update(playerPos);
+      }
+    });
+
     // Check vegetable collisions
     this.checkVegetableCollisions();
 
@@ -317,6 +347,12 @@ export class GameScene extends Phaser.Scene {
 
     // Check collectible collisions
     this.checkCollectibleCollisions();
+
+    // Check enemy collisions
+    this.checkEnemyCollisions();
+
+    // Check power-up collisions
+    this.checkPowerUpCollisions();
 
     // Check win condition
     this.checkWinCondition();
@@ -425,10 +461,82 @@ export class GameScene extends Phaser.Scene {
     this.obstacles = this.obstacles.filter(o => o !== nearestCrate);
   }
 
+  private checkEnemyCollisions(): void {
+    const playerPos = this.player.getPosition();
+    const playerRadius = 15 + (this.player.size - 1) * 10;
+
+    this.enemies.forEach((enemy, index) => {
+      if (!enemy.isAlive()) return;
+
+      const dx = enemy.sprite.x - playerPos.x;
+      const dy = enemy.sprite.y - playerPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < playerRadius + 20) {
+        // Enemy hit player!
+        this.player.takeDamage(enemy.getDamage());
+        enemy.hit();
+        this.score = Math.max(0, this.score - 100);
+
+        // Camera shake on hit
+        this.cameras.main.shake(200, 0.01);
+      }
+    });
+
+    // Remove dead enemies
+    this.enemies = this.enemies.filter(e => e.isAlive());
+  }
+
+  private checkPowerUpCollisions(): void {
+    const playerPos = this.player.getPosition();
+    const playerRadius = 15 + (this.player.size - 1) * 10;
+
+    this.powerups.forEach((powerup, index) => {
+      const dx = powerup.sprite.x - playerPos.x;
+      const dy = powerup.sprite.y - playerPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < playerRadius + 12) {
+        // Collect power-up!
+        this.score += 100;
+
+        // Apply power-up effect
+        switch (powerup.type) {
+          case 'SHIELD':
+            // Temporary invincibility - reduce damage taken
+            this.player.heal(30);
+            break;
+          case 'SPEED':
+            this.player.applySpeedBoost(2.0, powerup.getDuration());
+            break;
+          case 'INVINCIBILITY':
+            this.player.heal(50);
+            // TODO: Add actual invincibility flag
+            break;
+          case 'MEGA_GROWTH':
+            this.player.grow(0.8);
+            break;
+          case 'FREEZE_ENEMIES':
+            // Freeze all enemies for duration
+            this.enemies.forEach(e => {
+              e.body.setVelocity(0, 0);
+            });
+            this.time.delayedCall(powerup.getDuration(), () => {
+              // Enemies will resume moving on their own
+            });
+            break;
+        }
+
+        powerup.collect();
+        this.powerups.splice(index, 1);
+      }
+    });
+  }
+
   private checkWinCondition(): void {
     const level = this.levelManager.getCurrentLevel();
 
-    if (this.player.canEscape() && this.player.size >= level.requiredSize) {
+    if (this.player.size >= level.requiredSize) {
       const playerPos = this.player.getPosition();
       const width = this.cameras.main.width;
 
@@ -548,7 +656,7 @@ export class GameScene extends Phaser.Scene {
 
     // Update exit visual based on player readiness
     const level = this.levelManager.getCurrentLevel();
-    if (this.player.canEscape() && this.player.size >= level.requiredSize) {
+    if (this.player.size >= level.requiredSize) {
       this.exitZone.setFillStyle(0x00ff00, 0.3);
       this.exitZone.setStrokeStyle(3, 0x00ff00);
       this.exitText.setText('EXIT');
@@ -556,7 +664,7 @@ export class GameScene extends Phaser.Scene {
     } else {
       this.exitZone.setFillStyle(0xff0000, 0.3);
       this.exitZone.setStrokeStyle(3, 0xff0000);
-      this.exitText.setText('LOCKED');
+      this.exitText.setText(`LOCKED\nNeed: ${level.requiredSize.toFixed(1)}`);
       this.exitText.setColor('#ff0000');
     }
   }
