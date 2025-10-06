@@ -23,157 +23,200 @@ export class LevelManager {
   }
 
   private initializeLevels(): void {
-    // Level 1: Tutorial - Basic collection
+    // Level 1: Tutorial Maze - Learn the basics
     this.levels.push({
-      name: 'Level 1: First Meal',
-      description: 'Collect vegetables to grow!',
+      name: 'Level 1: First Steps',
+      description: 'Navigate the maze to find your first meal!',
       vegetables: [
-        { x: 200, y: 150, type: 'CARROT' },
-        { x: 600, y: 150, type: 'CARROT' },
-        { x: 400, y: 400, type: 'LETTUCE' },
-        { x: 200, y: 450, type: 'LETTUCE' },
+        { x: 700, y: 150, type: 'CARROT' },
+        { x: 150, y: 500, type: 'LETTUCE' },
+        { x: 650, y: 500, type: 'CARROT' },
       ],
       hazards: [
         { x: 400, y: 250, type: 'BOMB' },
+        { x: 600, y: 400, type: 'BOMB' },
       ],
       obstacles: [
-        { x: 300, y: 200, width: 100, height: 20, type: 'WALL' },
-        { x: 450, y: 350, width: 80, height: 80, type: 'CRATE' },
+        // Top corridor
+        { x: 0, y: 100, width: 600, height: 20, type: 'WALL' },
+        { x: 0, y: 200, width: 300, height: 20, type: 'WALL' },
+        { x: 450, y: 200, width: 350, height: 20, type: 'WALL' },
+        // Middle maze
+        { x: 200, y: 250, width: 20, height: 150, type: 'WALL' },
+        { x: 500, y: 300, width: 20, height: 250, type: 'WALL' },
+        { x: 350, y: 350, width: 150, height: 20, type: 'WALL' },
+        // Bottom barriers
+        { x: 0, y: 450, width: 400, height: 20, type: 'WALL' },
+        { x: 550, y: 450, width: 250, height: 20, type: 'WALL' },
       ],
       collectibles: [
-        { x: 700, y: 500, type: 'COIN' },
-        { x: 100, y: 500, type: 'COIN' },
+        { x: 300, y: 300, type: 'COIN' },
+        { x: 700, y: 250, type: 'COIN' },
       ],
-      requiredSize: 1.8,
+      requiredSize: 1.5,
       coins: 2
     });
 
-    // Level 2: Maze challenge
+    // Level 2: The Labyrinth - Complex pathfinding
     this.levels.push({
-      name: 'Level 2: The Maze',
-      description: 'Navigate the maze to find vegetables!',
+      name: 'Level 2: The Labyrinth',
+      description: 'Find your way through the twisted corridors!',
       vegetables: [
-        { x: 150, y: 100, type: 'CARROT' },
-        { x: 650, y: 500, type: 'PEPPER' },
-        { x: 700, y: 150, type: 'BROCCOLI' },
+        { x: 100, y: 100, type: 'CARROT' },
+        { x: 700, y: 100, type: 'PEPPER' },
+        { x: 400, y: 500, type: 'BROCCOLI' },
       ],
       hazards: [
-        { x: 400, y: 300, type: 'DYNAMITE' },
-        { x: 250, y: 450, type: 'BOMB' },
-        { x: 550, y: 200, type: 'BOMB' },
+        { x: 250, y: 200, type: 'BOMB' },
+        { x: 550, y: 300, type: 'DYNAMITE' },
+        { x: 350, y: 450, type: 'BOMB' },
       ],
       obstacles: [
-        // Maze walls
-        { x: 0, y: 150, width: 300, height: 20, type: 'WALL' },
-        { x: 250, y: 150, width: 20, height: 200, type: 'WALL' },
-        { x: 450, y: 100, width: 20, height: 300, type: 'WALL' },
-        { x: 100, y: 350, width: 200, height: 20, type: 'WALL' },
-        { x: 500, y: 250, width: 250, height: 20, type: 'WALL' },
-        { x: 600, y: 350, width: 20, height: 200, type: 'WALL' },
+        // Complex maze structure
+        { x: 0, y: 150, width: 250, height: 20, type: 'WALL' },
+        { x: 200, y: 150, width: 20, height: 200, type: 'WALL' },
+        { x: 350, y: 80, width: 20, height: 150, type: 'WALL' },
+        { x: 350, y: 200, width: 200, height: 20, type: 'WALL' },
+        { x: 530, y: 80, width: 20, height: 150, type: 'WALL' },
+        { x: 650, y: 150, width: 150, height: 20, type: 'WALL' },
+        { x: 100, y: 280, width: 250, height: 20, type: 'WALL' },
+        { x: 450, y: 280, width: 250, height: 20, type: 'WALL' },
+        { x: 350, y: 320, width: 20, height: 150, type: 'WALL' },
+        { x: 150, y: 400, width: 200, height: 20, type: 'WALL' },
+        { x: 500, y: 400, width: 200, height: 20, type: 'WALL' },
       ],
       collectibles: [
-        { x: 350, y: 200, type: 'COIN' },
-        { x: 500, y: 400, type: 'COIN' },
-        { x: 100, y: 250, type: 'COIN' },
+        { x: 150, y: 250, type: 'COIN' },
+        { x: 600, y: 350, type: 'COIN' },
+        { x: 250, y: 450, type: 'COIN' },
       ],
-      requiredSize: 2.3,
+      requiredSize: 2.2,
       coins: 3
     });
 
-    // Level 3: Locked crate puzzle
+    // Level 3: Locked Chambers - Key hunt through maze
     this.levels.push({
-      name: 'Level 3: Locked Away',
-      description: 'Find keys to unlock crates with food!',
+      name: 'Level 3: Locked Chambers',
+      description: 'Find keys hidden in the maze to unlock food chambers!',
       vegetables: [
-        { x: 350, y: 200, type: 'BROCCOLI' },
-        { x: 650, y: 400, type: 'PEPPER' },
-        { x: 150, y: 450, type: 'CARROT' },
+        { x: 120, y: 120, type: 'BROCCOLI' },
+        { x: 680, y: 120, type: 'PEPPER' },
+        { x: 400, y: 480, type: 'BROCCOLI' },
       ],
       hazards: [
-        { x: 400, y: 350, type: 'DYNAMITE' },
-        { x: 200, y: 250, type: 'BOMB' },
-        { x: 600, y: 250, type: 'BOMB' },
+        { x: 300, y: 250, type: 'DYNAMITE' },
+        { x: 500, y: 350, type: 'BOMB' },
       ],
       obstacles: [
-        { x: 320, y: 170, width: 60, height: 60, type: 'LOCKED_CRATE' },
-        { x: 620, y: 370, width: 60, height: 60, type: 'LOCKED_CRATE' },
-        { x: 120, y: 420, width: 60, height: 60, type: 'LOCKED_CRATE' },
-        { x: 200, y: 100, width: 100, height: 20, type: 'WALL' },
-        { x: 500, y: 150, width: 20, height: 150, type: 'WALL' },
+        // Locked chambers around vegetables
+        { x: 80, y: 80, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        { x: 640, y: 80, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        { x: 360, y: 440, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        // Maze to reach keys
+        { x: 250, y: 100, width: 20, height: 200, type: 'WALL' },
+        { x: 400, y: 80, width: 20, height: 250, type: 'WALL' },
+        { x: 550, y: 100, width: 20, height: 200, type: 'WALL' },
+        { x: 150, y: 300, width: 300, height: 20, type: 'WALL' },
+        { x: 450, y: 300, width: 250, height: 20, type: 'WALL' },
+        { x: 300, y: 380, width: 20, height: 150, type: 'WALL' },
+        { x: 500, y: 380, width: 20, height: 150, type: 'WALL' },
       ],
       collectibles: [
-        { x: 100, y: 100, type: 'KEY' },
-        { x: 700, y: 150, type: 'KEY' },
-        { x: 400, y: 500, type: 'KEY' },
-        { x: 250, y: 400, type: 'COIN' },
-        { x: 550, y: 500, type: 'COIN' },
+        { x: 150, y: 200, type: 'KEY' },
+        { x: 650, y: 250, type: 'KEY' },
+        { x: 400, y: 350, type: 'KEY' },
+        { x: 200, y: 450, type: 'COIN' },
+        { x: 600, y: 450, type: 'COIN' },
       ],
       requiredSize: 2.8,
       coins: 5
     });
 
-    // Level 4: Water hazard
+    // Level 4: Water Works - Navigate around water pools
     this.levels.push({
-      name: 'Level 4: Flooded Cage',
-      description: 'Avoid the water! Only large guinea pigs can cross!',
+      name: 'Level 4: Water Works',
+      description: 'Cross the flooded maze - careful not to drown!',
       vegetables: [
-        { x: 100, y: 100, type: 'LETTUCE' },
-        { x: 700, y: 500, type: 'BROCCOLI' },
-        { x: 700, y: 100, type: 'PEPPER' },
-        { x: 100, y: 500, type: 'CARROT' },
+        { x: 100, y: 100, type: 'PEPPER' },
+        { x: 700, y: 100, type: 'BROCCOLI' },
+        { x: 100, y: 500, type: 'BROCCOLI' },
+        { x: 700, y: 500, type: 'PEPPER' },
       ],
       hazards: [
-        { x: 400, y: 100, type: 'BOMB' },
-        { x: 400, y: 500, type: 'BOMB' },
+        { x: 400, y: 180, type: 'BOMB' },
+        { x: 400, y: 420, type: 'BOMB' },
       ],
       obstacles: [
-        { x: 200, y: 200, width: 400, height: 200, type: 'WATER' },
-        { x: 50, y: 300, width: 100, height: 80, type: 'ROCK' },
-        { x: 650, y: 220, width: 100, height: 80, type: 'ROCK' },
+        // Water pools creating maze
+        { x: 180, y: 150, width: 140, height: 120, type: 'WATER' },
+        { x: 480, y: 150, width: 140, height: 120, type: 'WATER' },
+        { x: 330, y: 300, width: 140, height: 120, type: 'WATER' },
+        { x: 180, y: 450, width: 140, height: 100, type: 'WATER' },
+        { x: 480, y: 450, width: 140, height: 100, type: 'WATER' },
+        // Safe platforms (rocks)
+        { x: 340, y: 200, width: 120, height: 20, type: 'ROCK' },
+        { x: 340, y: 380, width: 120, height: 20, type: 'ROCK' },
+        // Walls to force path
+        { x: 0, y: 200, width: 150, height: 20, type: 'WALL' },
+        { x: 650, y: 200, width: 150, height: 20, type: 'WALL' },
+        { x: 0, y: 400, width: 150, height: 20, type: 'WALL' },
+        { x: 650, y: 400, width: 150, height: 20, type: 'WALL' },
       ],
       collectibles: [
         { x: 400, y: 300, type: 'STAR' },
-        { x: 300, y: 150, type: 'COIN' },
-        { x: 500, y: 450, type: 'COIN' },
+        { x: 150, y: 300, type: 'COIN' },
+        { x: 650, y: 300, type: 'COIN' },
       ],
       requiredSize: 3.2,
       coins: 7
     });
 
-    // Level 5: Final challenge
+    // Level 5: The Gauntlet - Ultimate maze challenge
     this.levels.push({
-      name: 'Level 5: The Great Escape!',
-      description: 'Navigate all hazards and unlock your freedom!',
+      name: 'Level 5: The Gauntlet',
+      description: 'Survive the ultimate maze - freedom awaits!',
       vegetables: [
-        { x: 150, y: 150, type: 'BROCCOLI' },
-        { x: 650, y: 150, type: 'BROCCOLI' },
-        { x: 150, y: 450, type: 'PEPPER' },
-        { x: 650, y: 450, type: 'PEPPER' },
+        { x: 120, y: 120, type: 'BROCCOLI' },
+        { x: 680, y: 120, type: 'BROCCOLI' },
         { x: 400, y: 300, type: 'BROCCOLI' },
+        { x: 120, y: 480, type: 'PEPPER' },
+        { x: 680, y: 480, type: 'PEPPER' },
       ],
       hazards: [
-        { x: 250, y: 200, type: 'DYNAMITE' },
-        { x: 550, y: 200, type: 'DYNAMITE' },
-        { x: 250, y: 400, type: 'BOMB' },
-        { x: 550, y: 400, type: 'BOMB' },
-        { x: 400, y: 150, type: 'BOMB' },
-        { x: 400, y: 450, type: 'BOMB' },
+        { x: 200, y: 200, type: 'DYNAMITE' },
+        { x: 600, y: 200, type: 'DYNAMITE' },
+        { x: 300, y: 400, type: 'BOMB' },
+        { x: 500, y: 400, type: 'BOMB' },
+        { x: 400, y: 500, type: 'DYNAMITE' },
       ],
       obstacles: [
-        { x: 100, y: 250, width: 80, height: 80, type: 'LOCKED_CRATE' },
-        { x: 620, y: 250, width: 80, height: 80, type: 'LOCKED_CRATE' },
-        { x: 350, y: 100, width: 100, height: 20, type: 'WALL' },
+        // Ultimate maze structure
+        { x: 80, y: 80, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        { x: 640, y: 80, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        { x: 80, y: 440, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        { x: 640, y: 440, width: 80, height: 80, type: 'LOCKED_CRATE' },
+        // Complex wall maze
+        { x: 200, y: 100, width: 20, height: 150, type: 'WALL' },
+        { x: 350, y: 60, width: 100, height: 20, type: 'WALL' },
+        { x: 580, y: 100, width: 20, height: 150, type: 'WALL' },
+        { x: 250, y: 230, width: 150, height: 20, type: 'WALL' },
+        { x: 400, y: 230, width: 150, height: 20, type: 'WALL' },
+        { x: 350, y: 200, width: 100, height: 150, type: 'WATER' },
+        { x: 150, y: 330, width: 150, height: 20, type: 'WALL' },
+        { x: 500, y: 330, width: 150, height: 20, type: 'WALL' },
+        { x: 200, y: 450, width: 20, height: 100, type: 'WALL' },
+        { x: 580, y: 450, width: 20, height: 100, type: 'WALL' },
         { x: 350, y: 480, width: 100, height: 20, type: 'WALL' },
-        { x: 200, y: 280, width: 150, height: 20, type: 'WATER' },
-        { x: 450, y: 280, width: 150, height: 20, type: 'WATER' },
       ],
       collectibles: [
-        { x: 100, y: 100, type: 'KEY' },
-        { x: 700, y: 500, type: 'KEY' },
-        { x: 200, y: 500, type: 'STAR' },
-        { x: 600, y: 100, type: 'STAR' },
-        { x: 400, y: 200, type: 'COIN' },
-        { x: 400, y: 400, type: 'COIN' },
+        { x: 100, y: 200, type: 'KEY' },
+        { x: 700, y: 200, type: 'KEY' },
+        { x: 100, y: 400, type: 'KEY' },
+        { x: 700, y: 400, type: 'KEY' },
+        { x: 250, y: 300, type: 'STAR' },
+        { x: 550, y: 300, type: 'STAR' },
+        { x: 400, y: 150, type: 'COIN' },
+        { x: 400, y: 450, type: 'COIN' },
       ],
       requiredSize: 3.8,
       coins: 10
