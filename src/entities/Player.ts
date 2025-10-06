@@ -81,14 +81,6 @@ export class Player {
     if (this.body.velocity.x !== 0 && this.body.velocity.y !== 0) {
       this.body.velocity.normalize().scale(speed);
     }
-
-    // Add subtle bouncing animation when moving (visual only, doesn't affect physics)
-    if (this.body.velocity.length() > 0) {
-      const bounce = Math.sin(Date.now() / 100) * 2;
-      this.sprite.setPosition(this.body.x, this.body.y + bounce);
-    } else {
-      this.sprite.setPosition(this.body.x, this.body.y);
-    }
   }
 
   public grow(amount: number): void {
