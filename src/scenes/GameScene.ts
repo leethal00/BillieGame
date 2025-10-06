@@ -7,6 +7,7 @@ import { Collectible } from '../entities/Collectible';
 import { Enemy } from '../entities/Enemy';
 import { PowerUp } from '../entities/PowerUp';
 import { LevelManager } from '../systems/LevelManager';
+import { VirtualJoystick } from '../controls/VirtualJoystick';
 import { GAME_CONSTANTS } from '../config';
 
 export class GameScene extends Phaser.Scene {
@@ -20,6 +21,8 @@ export class GameScene extends Phaser.Scene {
   };
   private restartKey!: Phaser.Input.Keyboard.Key;
   private playerDead: boolean = false;
+  private virtualJoystick?: VirtualJoystick;
+  private isMobile: boolean = false;
 
   private vegetables: Vegetable[] = [];
   private hazards: Hazard[] = [];
@@ -78,6 +81,15 @@ export class GameScene extends Phaser.Scene {
       D: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D)
     };
     this.restartKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+
+    // Detect mobile and setup virtual joystick
+    this.isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS ||
+                    this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone ||
+                    'ontouchstart' in window;
+
+    if (this.isMobile) {
+      this.virtualJoystick = new VirtualJoystick(this, 100, 500);
+    }
 
     // Create UI
     this.createUI();
@@ -220,13 +232,37 @@ export class GameScene extends Phaser.Scene {
     });
     this.timerText.setDepth(1000);
 
-    // Restart hint (bottom right)
-    const restartHint = this.add.text(770, 580, 'Press R to Restart', {
-      font: '12px Arial',
-      color: '#aaaaaa'
-    });
-    restartHint.setOrigin(1, 1);
-    restartHint.setDepth(1000);
+    // Restart hint/button
+    if (this.isMobile) {
+      // Mobile restart button (top right)
+      const restartBtn = this.add.graphics();
+      restartBtn.fillStyle(0x000000, 0.5);
+      restartBtn.fillRoundedRect(700, 5, 90, 35, 5);
+      restartBtn.lineStyle(2, 0xffffff, 0.8);
+      restartBtn.strokeRoundedRect(700, 5, 90, 35, 5);
+      restartBtn.setDepth(1000);
+      restartBtn.setScrollFactor(0);
+      restartBtn.setInteractive(new Phaser.Geom.Rectangle(700, 5, 90, 35), Phaser.Geom.Rectangle.Contains);
+      restartBtn.on('pointerdown', () => {
+        this.restartLevel();
+      });
+
+      const restartText = this.add.text(745, 22, '↻ RESTART', {
+        font: 'bold 14px Arial',
+        color: '#ffffff'
+      });
+      restartText.setOrigin(0.5);
+      restartText.setDepth(1001);
+      restartText.setScrollFactor(0);
+    } else {
+      // Desktop restart hint (bottom right)
+      const restartHint = this.add.text(770, 580, 'Press R to Restart', {
+        font: '12px Arial',
+        color: '#aaaaaa'
+      });
+      restartHint.setOrigin(1, 1);
+      restartHint.setDepth(1000);
+    }
   }
 
   private loadLevel(): void {
@@ -345,12 +381,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Handle player movement
-    const input = {
-      left: this.cursors.left.isDown || this.wasd.A.isDown,
-      right: this.cursors.right.isDown || this.wasd.D.isDown,
-      up: this.cursors.up.isDown || this.wasd.W.isDown,
-      down: this.cursors.down.isDown || this.wasd.S.isDown
-    };
+    let input;
+    if (this.isMobile && this.virtualJoystick) {
+      // Use virtual joystick on mobile
+      input = this.virtualJoystick.getInput();
+    } else {
+      // Use keyboard on desktop
+      input = {
+        left: this.cursors.left.isDown || this.wasd.A.isDown,
+        right: this.cursors.right.isDown || this.wasd.D.isDown,
+        up: this.cursors.up.isDown || this.wasd.W.isDown,
+        down: this.cursors.down.isDown || this.wasd.S.isDown
+      };
+    }
 
     this.player.update(input);
 
