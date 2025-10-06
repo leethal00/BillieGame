@@ -26,9 +26,17 @@ export class GameScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    // Create cage background
+    // Create cage background with wood texture
     const cage = this.add.rectangle(0, 0, width, height, 0x8b7355);
     cage.setOrigin(0, 0);
+
+    // Add some straw/bedding visual effect
+    for (let i = 0; i < 30; i++) {
+      const x = Phaser.Math.Between(0, width);
+      const y = Phaser.Math.Between(0, height);
+      const straw = this.add.rectangle(x, y, Phaser.Math.Between(20, 40), 2, 0xdaa520, 0.3);
+      straw.setRotation(Phaser.Math.FloatBetween(0, Math.PI));
+    }
 
     // Add cage bars (visual)
     this.createCageBars();
@@ -55,26 +63,51 @@ export class GameScene extends Phaser.Scene {
   private createCageBars(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const barWidth = 8;
-    const spacing = 40;
+    const barWidth = 10;
+    const spacing = 50;
 
-    // Vertical bars
+    // Vertical bars with gradient effect
     for (let x = 0; x < width; x += spacing) {
       const bar = this.add.rectangle(x, 0, barWidth, height, 0x4a4a4a);
       bar.setOrigin(0, 0);
+
+      // Add highlight to bars
+      const highlight = this.add.rectangle(x + 2, 0, 2, height, 0x666666, 0.5);
+      highlight.setOrigin(0, 0);
     }
 
-    // Horizontal bars (top and bottom)
-    this.add.rectangle(0, 0, width, 20, 0x4a4a4a).setOrigin(0, 0);
-    this.add.rectangle(0, height - 20, width, 20, 0x4a4a4a).setOrigin(0, 0);
+    // Horizontal bars (top and bottom) - thicker
+    const topBar = this.add.rectangle(0, 0, width, 25, 0x3a3a3a);
+    topBar.setOrigin(0, 0);
+    const topHighlight = this.add.rectangle(0, 22, width, 3, 0x555555, 0.5);
+    topHighlight.setOrigin(0, 0);
+
+    const bottomBar = this.add.rectangle(0, height - 25, width, 25, 0x3a3a3a);
+    bottomBar.setOrigin(0, 0);
+    const bottomHighlight = this.add.rectangle(0, height - 25, width, 3, 0x555555, 0.5);
+    bottomHighlight.setOrigin(0, 0);
 
     // Exit zone (top right - will unlock when big enough)
-    const exitZone = this.add.rectangle(width - 80, 10, 60, 40, 0x00ff00, 0.3);
-    exitZone.setStrokeStyle(2, 0x00ff00);
-    this.add.text(width - 80, 30, 'EXIT', {
-      font: 'bold 12px Arial',
-      color: '#00ff00'
-    }).setOrigin(0.5);
+    const exitZone = this.add.rectangle(width - 100, 5, 80, 40, 0x00ff00, 0.2);
+    exitZone.setStrokeStyle(3, 0x00ff00);
+
+    const exitText = this.add.text(width - 60, 25, 'EXIT', {
+      font: 'bold 16px Arial',
+      color: '#00ff00',
+      stroke: '#000000',
+      strokeThickness: 3
+    });
+    exitText.setOrigin(0.5);
+
+    // Pulse animation on exit
+    this.tweens.add({
+      targets: [exitZone, exitText],
+      alpha: 0.4,
+      duration: 1000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
   }
 
   private createUI(): void {

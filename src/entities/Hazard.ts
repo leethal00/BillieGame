@@ -4,7 +4,7 @@ import { GAME_CONSTANTS } from '../config';
 export type HazardType = 'BOMB' | 'DYNAMITE';
 
 export class Hazard {
-  public sprite: Phaser.GameObjects.Graphics;
+  public sprite: Phaser.GameObjects.Sprite;
   public body: Phaser.Physics.Arcade.Body;
   public type: HazardType;
   private scene: Phaser.Scene;
@@ -15,21 +15,25 @@ export class Hazard {
     this.scene = scene;
     this.type = type;
 
-    // Create hazard sprite (graphics for now)
-    this.sprite = scene.add.graphics();
-    this.sprite.setPosition(x, y);
-    this.drawHazard();
+    // Create hazard sprite using generated textures
+    const textureKey = this.getTextureKey(type);
+    this.sprite = scene.add.sprite(x, y, textureKey);
+    this.sprite.setOrigin(0.5, 0.5);
 
     // Add physics
     scene.physics.add.existing(this.sprite);
     this.body = this.sprite.body as Phaser.Physics.Arcade.Body;
-    this.body.setCircle(this.getRadius());
+    this.body.setSize(this.sprite.width * 0.7, this.sprite.height * 0.7);
     this.body.setImmovable(true);
 
     // Start fuse timer for dynamite
     if (type === 'DYNAMITE') {
       this.startFuse();
     }
+  }
+
+  private getTextureKey(type: HazardType): string {
+    return `hazard-${type.toLowerCase()}`;
   }
 
   private getRadius(): number {
@@ -42,28 +46,6 @@ export class Hazard {
     return this.type === 'BOMB' ?
       GAME_CONSTANTS.HAZARDS.BOMB.damage :
       GAME_CONSTANTS.HAZARDS.DYNAMITE.damage;
-  }
-
-  private drawHazard(): void {
-    this.sprite.clear();
-
-    if (this.type === 'BOMB') {
-      // Draw bomb (black circle)
-      this.sprite.fillStyle(0x000000);
-      this.sprite.fillCircle(0, 0, 12);
-      this.sprite.lineStyle(2, 0x666666);
-      this.sprite.strokeCircle(0, 0, 12);
-    } else {
-      // Draw dynamite (red rectangle with fuse)
-      this.sprite.fillStyle(0xff0000);
-      this.sprite.fillRect(-8, -12, 16, 24);
-      this.sprite.lineStyle(2, 0x000000);
-      this.sprite.strokeRect(-8, -12, 16, 24);
-
-      // Fuse
-      this.sprite.lineStyle(2, 0x000000);
-      this.sprite.lineBetween(0, -12, 0, -20);
-    }
   }
 
   private startFuse(): void {
@@ -89,31 +71,39 @@ export class Hazard {
 
     this.isActive = false;
 
-    // Create explosion effect
+    // Create explosion effect using particles
     const explosionRadius = this.getRadius();
-    const explosion = this.scene.add.circle(
-      this.sprite.x,
-      this.sprite.y,
-      0,
-      0xff6600,
-      0.7
-    );
 
-    this.scene.tweens.add({
-      targets: explosion,
-      radius: explosionRadius,
-      alpha: 0,
-      duration: 500,
-      ease: 'Power2',
-      onComplete: () => {
-        explosion.destroy();
-      }
-    });
+    // Multiple expanding circles for better explosion effect
+    for (let i = 0; i < 3; i++) {
+      const delay = i * 100;
+      this.scene.time.delayedCall(delay, () => {
+        const explosion = this.scene.add.circle(
+          this.sprite.x,
+          this.sprite.y,
+          0,
+          i === 0 ? 0xff6600 : (i === 1 ? 0xffaa00 : 0xffdd44),
+          0.8 - i * 0.2
+        );
+
+        this.scene.tweens.add({
+          targets: explosion,
+          radius: explosionRadius * (1 - i * 0.2),
+          alpha: 0,
+          duration: 400,
+          ease: 'Power2',
+          onComplete: () => {
+            explosion.destroy();
+          }
+        });
+      });
+    }
 
     // Shake camera
-    this.scene.cameras.main.shake(200, 0.01);
+    this.scene.cameras.main.shake(200, 0.015);
 
-    // Will be used for damage detection in GameScene
+    // Hide the hazard sprite
+    this.sprite.setVisible(false);
   }
 
   public trigger(): number {

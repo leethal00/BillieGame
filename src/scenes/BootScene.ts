@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SpriteGenerator } from '../utils/SpriteGenerator';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -37,12 +38,18 @@ export class BootScene extends Phaser.Scene {
       progressBox.destroy();
       loadingText.destroy();
     });
-
-    // Load assets here (for now we'll use placeholder shapes)
-    // TODO: Load actual sprite assets when ready
   }
 
   create(): void {
+    // Generate all sprite textures
+    SpriteGenerator.generateGuineaPig(this, 1);
+    SpriteGenerator.generateGuineaPig(this, 1.5);
+    SpriteGenerator.generateGuineaPig(this, 2);
+    SpriteGenerator.generateGuineaPig(this, 2.5);
+    SpriteGenerator.generateVegetables(this);
+    SpriteGenerator.generateHazards(this);
+    SpriteGenerator.generateExplosion(this);
+
     this.scene.start('MenuScene');
   }
 }
