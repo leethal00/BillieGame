@@ -58,6 +58,7 @@ export class GameScene extends Phaser.Scene {
 
     // Create player
     this.player = new Player(this, width / 2, height / 2);
+    this.player.sprite.setDepth(50);
 
     // Setup controls
     this.cursors = this.input.keyboard!.createCursorKeys();
@@ -98,30 +99,30 @@ export class GameScene extends Phaser.Scene {
     const barWidth = 10;
     const spacing = 50;
 
-    // Vertical bars
+    // Vertical bars (behind player)
     for (let x = 0; x < width; x += spacing) {
       const bar = this.add.rectangle(x, 0, barWidth, height, 0x4a4a4a);
       bar.setOrigin(0, 0);
-      bar.setDepth(100);
+      bar.setDepth(10);
 
       const highlight = this.add.rectangle(x + 2, 0, 2, height, 0x666666, 0.5);
       highlight.setOrigin(0, 0);
-      highlight.setDepth(100);
+      highlight.setDepth(10);
     }
 
-    // Horizontal bars (top and bottom)
+    // Horizontal bars (top and bottom - in front of player)
     const topBar = this.add.rectangle(0, 0, width, 25, 0x3a3a3a);
     topBar.setOrigin(0, 0);
-    topBar.setDepth(100);
+    topBar.setDepth(200);
 
     const bottomBar = this.add.rectangle(0, height - 25, width, 25, 0x3a3a3a);
     bottomBar.setOrigin(0, 0);
-    bottomBar.setDepth(100);
+    bottomBar.setDepth(200);
 
     // Exit zone
     const exitZone = this.add.rectangle(width - 100, 5, 80, 40, 0x00ff00, 0.2);
     exitZone.setStrokeStyle(3, 0x00ff00);
-    exitZone.setDepth(100);
+    exitZone.setDepth(200);
 
     const exitText = this.add.text(width - 60, 25, 'EXIT', {
       font: 'bold 16px Arial',
@@ -130,7 +131,7 @@ export class GameScene extends Phaser.Scene {
       strokeThickness: 3
     });
     exitText.setOrigin(0.5);
-    exitText.setDepth(100);
+    exitText.setDepth(200);
 
     this.tweens.add({
       targets: [exitZone, exitText],
@@ -231,18 +232,21 @@ export class GameScene extends Phaser.Scene {
     // Spawn vegetables
     level.vegetables.forEach(v => {
       const veg = new Vegetable(this, v.x, v.y, v.type);
+      veg.sprite.setDepth(30);
       this.vegetables.push(veg);
     });
 
     // Spawn hazards
     level.hazards.forEach(h => {
       const hazard = new Hazard(this, h.x, h.y, h.type);
+      hazard.sprite.setDepth(30);
       this.hazards.push(hazard);
     });
 
     // Spawn obstacles
     level.obstacles.forEach(o => {
       const obstacle = new Obstacle(this, o.x, o.y, o.width, o.height, o.type);
+      obstacle.sprite.setDepth(20);
       this.obstacles.push(obstacle);
       this.physics.add.collider(this.player.sprite, obstacle.sprite);
     });
@@ -250,6 +254,7 @@ export class GameScene extends Phaser.Scene {
     // Spawn collectibles
     level.collectibles.forEach(c => {
       const collectible = new Collectible(this, c.x, c.y, c.type);
+      collectible.sprite.setDepth(40);
       this.collectibles.push(collectible);
     });
 
