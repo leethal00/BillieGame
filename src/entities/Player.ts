@@ -10,6 +10,7 @@ export class Player {
   private speedBoostMultiplier: number = 1;
   private speedBoostTimer?: Phaser.Time.TimerEvent;
   private normalTint: boolean = true;
+  private onDeathCallback?: () => void;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     this.scene = scene;
@@ -164,9 +165,21 @@ export class Player {
   }
 
   private die(): void {
-    // TODO: Implement game over logic
     console.log('Player died!');
     this.sprite.setVisible(false);
+
+    // Call death callback if set
+    if (this.onDeathCallback) {
+      this.onDeathCallback();
+    }
+  }
+
+  public setOnDeathCallback(callback: () => void): void {
+    this.onDeathCallback = callback;
+  }
+
+  public isDead(): boolean {
+    return this.health <= 0;
   }
 
   public getPosition(): { x: number; y: number } {

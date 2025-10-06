@@ -18,6 +18,8 @@ export class GameScene extends Phaser.Scene {
     S: Phaser.Input.Keyboard.Key;
     D: Phaser.Input.Keyboard.Key;
   };
+  private restartKey!: Phaser.Input.Keyboard.Key;
+  private playerDead: boolean = false;
 
   private vegetables: Vegetable[] = [];
   private hazards: Hazard[] = [];
@@ -65,6 +67,7 @@ export class GameScene extends Phaser.Scene {
     // Create player
     this.player = new Player(this, width / 2, height / 2);
     this.player.sprite.setDepth(50);
+    this.player.setOnDeathCallback(() => this.handlePlayerDeath());
 
     // Setup controls
     this.cursors = this.input.keyboard!.createCursorKeys();
@@ -74,6 +77,7 @@ export class GameScene extends Phaser.Scene {
       S: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
       D: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D)
     };
+    this.restartKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
     // Create UI
     this.createUI();
@@ -215,6 +219,14 @@ export class GameScene extends Phaser.Scene {
       strokeThickness: 3
     });
     this.timerText.setDepth(1000);
+
+    // Restart hint (bottom right)
+    const restartHint = this.add.text(770, 580, 'Press R to Restart', {
+      font: '12px Arial',
+      color: '#aaaaaa'
+    });
+    restartHint.setOrigin(1, 1);
+    restartHint.setDepth(1000);
   }
 
   private loadLevel(): void {
@@ -321,6 +333,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    // Check for restart key
+    if (Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      this.restartLevel();
+      return;
+    }
+
+    // Don't update if player is dead
+    if (this.playerDead) {
+      return;
+    }
+
     // Handle player movement
     const input = {
       left: this.cursors.left.isDown || this.wasd.A.isDown,
@@ -403,10 +426,7 @@ export class GameScene extends Phaser.Scene {
         const damage = hazard.trigger();
         this.player.takeDamage(damage);
         this.hazards.splice(index, 1);
-
-        if (this.player.health <= 0) {
-          this.gameOver();
-        }
+        // Death is now handled automatically via callback in Player class
       }
     });
   }
@@ -627,6 +647,75 @@ export class GameScene extends Phaser.Scene {
     this.input.keyboard?.once('keydown-ENTER', () => {
       this.scene.restart();
     });
+  }
+
+  private handlePlayerDeath(): void {
+    this.playerDead = true;
+
+    // Show game over screen
+    const bg = this.add.rectangle(400, 300, 700, 300, 0x000000, 0.9);
+    bg.setDepth(3000);
+
+    const gameOverText = this.add.text(400, 220, '💀 GAME OVER 💀', {
+      font: 'bold 64px Arial',
+      color: '#ff0000',
+      stroke: '#000000',
+      strokeThickness: 8
+    });
+    gameOverText.setOrigin(0.5);
+    gameOverText.setDepth(3000);
+
+    const statsText = this.add.text(400, 300,
+      `Final Score: ${this.score}\nLevel: ${this.levelManager.getCurrentLevelNumber()}`, {
+      font: '24px Arial',
+      color: '#ffffff',
+      align: 'center',
+      lineSpacing: 10
+    });
+    statsText.setOrigin(0.5);
+    statsText.setDepth(3000);
+
+    const restartText = this.add.text(400, 380, 'Press R to Restart Level\nPress ENTER to Restart Game', {
+      font: '20px Arial',
+      color: '#ffff00',
+      align: 'center',
+      lineSpacing: 8
+    });
+    restartText.setOrigin(0.5);
+    restartText.setDepth(3000);
+
+    // Pulse animation
+    this.tweens.add({
+      targets: restartText,
+      alpha: 0.5,
+      duration: 800,
+      yoyo: true,
+      repeat: -1
+    });
+
+    // Allow restart
+    this.input.keyboard?.once('keydown-ENTER', () => {
+      this.scene.restart();
+    });
+  }
+
+  private restartLevel(): void {
+    this.playerDead = false;
+
+    // Reset player
+    this.player.health = GAME_CONSTANTS.PLAYER.INITIAL_HEALTH;
+    this.player.size = GAME_CONSTANTS.PLAYER.INITIAL_SIZE;
+    this.player.sprite.setVisible(true);
+    this.player.sprite.setPosition(400, 300);
+
+    // Reset score (penalty for dying)
+    this.score = Math.max(0, this.score - 200);
+
+    // Reload current level
+    this.loadLevel();
+
+    // Reset timer
+    this.startTime = Date.now();
   }
 
   private updateUI(): void {
