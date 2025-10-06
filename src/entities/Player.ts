@@ -73,11 +73,12 @@ export class Player {
 
   public grow(amount: number): void {
     const oldSize = this.size;
+    const oldKey = this.getSpriteKey();
+
     this.size += amount;
     this.size = Math.min(this.size, GAME_CONSTANTS.PLAYER.ESCAPE_SIZE);
 
     // Update sprite texture if size threshold crossed
-    const oldKey = this.getSpriteKey();
     const newKey = this.getSpriteKey();
     if (oldKey !== newKey) {
       this.sprite.setTexture(newKey);
