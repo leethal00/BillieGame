@@ -1,0 +1,21 @@
+{
+  "name": "billiegame",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["game", "phaser", "guinea-pig"],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "phaser": "^3.90.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
+  }
+}
