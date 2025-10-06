@@ -17,7 +17,7 @@ A fun browser-based game where you play as a guinea pig trying to escape from a 
 
 ## 🚀 Play Online
 
-[Play the game here](https://yourusername.github.io/BillieGame/) *(Update after deployment)*
+[Play the game here](https://leethal00.github.io/BillieGame/)
 
 ## 🛠️ Development
 
