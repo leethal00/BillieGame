@@ -17,7 +17,25 @@ export class Player {
     this.size = GAME_CONSTANTS.PLAYER.INITIAL_SIZE;
 
     // Create player sprite using generated guinea pig texture
-    this.sprite = scene.add.sprite(x, y, this.getSpriteKey());
+    const textureKey = this.getSpriteKey();
+
+    // Check if texture exists, if not create a simple circle as fallback
+    if (!scene.textures.exists(textureKey)) {
+      console.warn(`Texture ${textureKey} not found, using fallback`);
+      // Create a fallback circle texture
+      const graphics = scene.add.graphics();
+      graphics.fillStyle(0xff9966, 1);
+      graphics.fillCircle(16, 16, 16);
+      graphics.lineStyle(2, 0x000000);
+      graphics.strokeCircle(16, 16, 16);
+      graphics.generateTexture('player-fallback', 32, 32);
+      graphics.destroy();
+
+      this.sprite = scene.add.sprite(x, y, 'player-fallback');
+    } else {
+      this.sprite = scene.add.sprite(x, y, textureKey);
+    }
+
     this.sprite.setOrigin(0.5, 0.5);
 
     // Add physics
