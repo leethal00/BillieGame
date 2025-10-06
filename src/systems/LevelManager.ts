@@ -23,38 +23,56 @@ export class LevelManager {
   }
 
   private initializeLevels(): void {
-    // Level 1: Tutorial Maze - Learn the basics
+    // Level 1: The First Trial - Challenging intro maze
     this.levels.push({
-      name: 'Level 1: First Steps',
-      description: 'Navigate the maze to find your first meal!',
+      name: 'Level 1: The First Trial',
+      description: 'Master the maze to earn your freedom!',
       vegetables: [
-        { x: 700, y: 150, type: 'CARROT' },
-        { x: 150, y: 500, type: 'LETTUCE' },
-        { x: 650, y: 500, type: 'CARROT' },
+        { x: 120, y: 480, type: 'CARROT' },      // Bottom left chamber
+        { x: 680, y: 480, type: 'LETTUCE' },     // Bottom right chamber
+        { x: 400, y: 120, type: 'BROCCOLI' },    // Top center chamber
       ],
       hazards: [
-        { x: 400, y: 250, type: 'BOMB' },
-        { x: 600, y: 400, type: 'BOMB' },
+        { x: 250, y: 250, type: 'BOMB' },
+        { x: 550, y: 350, type: 'BOMB' },
+        { x: 400, y: 450, type: 'DYNAMITE' },
       ],
       obstacles: [
-        // Top corridor
-        { x: 0, y: 100, width: 600, height: 20, type: 'WALL' },
-        { x: 0, y: 200, width: 300, height: 20, type: 'WALL' },
-        { x: 450, y: 200, width: 350, height: 20, type: 'WALL' },
-        // Middle maze
-        { x: 200, y: 250, width: 20, height: 150, type: 'WALL' },
-        { x: 500, y: 300, width: 20, height: 250, type: 'WALL' },
-        { x: 350, y: 350, width: 150, height: 20, type: 'WALL' },
-        // Bottom barriers
-        { x: 0, y: 450, width: 400, height: 20, type: 'WALL' },
-        { x: 550, y: 450, width: 250, height: 20, type: 'WALL' },
+        // Create complex S-shaped maze path
+        // Top section - force right path
+        { x: 0, y: 80, width: 320, height: 20, type: 'WALL' },
+        { x: 480, y: 80, width: 320, height: 20, type: 'WALL' },
+        { x: 300, y: 80, width: 20, height: 100, type: 'WALL' },
+
+        // Upper-middle - narrow corridor with bomb
+        { x: 150, y: 180, width: 200, height: 20, type: 'WALL' },
+        { x: 450, y: 180, width: 250, height: 20, type: 'WALL' },
+        { x: 150, y: 180, width: 20, height: 120, type: 'WALL' },
+        { x: 500, y: 180, width: 20, height: 100, type: 'WALL' },
+
+        // Middle section - zigzag
+        { x: 0, y: 280, width: 250, height: 20, type: 'WALL' },
+        { x: 350, y: 280, width: 450, height: 20, type: 'WALL' },
+        { x: 350, y: 280, width: 20, height: 140, type: 'WALL' },
+
+        // Lower middle - dangerous passage with dynamite
+        { x: 200, y: 380, width: 250, height: 20, type: 'WALL' },
+        { x: 500, y: 380, width: 150, height: 20, type: 'WALL' },
+        { x: 200, y: 380, width: 20, height: 100, type: 'WALL' },
+        { x: 630, y: 380, width: 20, height: 100, type: 'WALL' },
+
+        // Bottom chambers
+        { x: 0, y: 440, width: 80, height: 20, type: 'WALL' },
+        { x: 160, y: 440, width: 470, height: 20, type: 'WALL' },
+        { x: 720, y: 440, width: 80, height: 20, type: 'WALL' },
       ],
       collectibles: [
-        { x: 300, y: 300, type: 'COIN' },
-        { x: 700, y: 250, type: 'COIN' },
+        { x: 600, y: 150, type: 'COIN' },
+        { x: 280, y: 350, type: 'COIN' },
+        { x: 550, y: 520, type: 'COIN' },
       ],
-      requiredSize: 1.5,
-      coins: 2
+      requiredSize: 1.8,
+      coins: 3
     });
 
     // Level 2: The Labyrinth - Complex pathfinding

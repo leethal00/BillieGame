@@ -37,6 +37,8 @@ export class GameScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private timerText!: Phaser.GameObjects.Text;
   private healthBar!: Phaser.GameObjects.Rectangle;
+  private exitZone!: Phaser.GameObjects.Rectangle;
+  private exitText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -120,21 +122,21 @@ export class GameScene extends Phaser.Scene {
     bottomBar.setDepth(200);
 
     // Exit zone
-    const exitZone = this.add.rectangle(width - 100, 5, 80, 40, 0x00ff00, 0.2);
-    exitZone.setStrokeStyle(3, 0x00ff00);
-    exitZone.setDepth(200);
+    this.exitZone = this.add.rectangle(width - 100, 5, 80, 40, 0xff0000, 0.3);
+    this.exitZone.setStrokeStyle(3, 0xff0000);
+    this.exitZone.setDepth(200);
 
-    const exitText = this.add.text(width - 60, 25, 'EXIT', {
-      font: 'bold 16px Arial',
-      color: '#00ff00',
+    this.exitText = this.add.text(width - 60, 25, 'LOCKED', {
+      font: 'bold 14px Arial',
+      color: '#ff0000',
       stroke: '#000000',
       strokeThickness: 3
     });
-    exitText.setOrigin(0.5);
-    exitText.setDepth(200);
+    this.exitText.setOrigin(0.5);
+    this.exitText.setDepth(200);
 
     this.tweens.add({
-      targets: [exitZone, exitText],
+      targets: [this.exitZone, this.exitText],
       alpha: 0.4,
       duration: 1000,
       yoyo: true,
@@ -430,7 +432,8 @@ export class GameScene extends Phaser.Scene {
       const playerPos = this.player.getPosition();
       const width = this.cameras.main.width;
 
-      if (playerPos.x > width - 100 && playerPos.y < 50) {
+      // Exit is in top right corner (accounting for top bar at y: 0-25)
+      if (playerPos.x > width - 120 && playerPos.y > 5 && playerPos.y < 45) {
         this.nextLevel();
       }
     }
@@ -542,5 +545,19 @@ export class GameScene extends Phaser.Scene {
     const minutes = Math.floor(timeElapsed / 60);
     const seconds = timeElapsed % 60;
     this.timerText.setText(`Time: ${minutes}:${seconds.toString().padStart(2, '0')}`);
+
+    // Update exit visual based on player readiness
+    const level = this.levelManager.getCurrentLevel();
+    if (this.player.canEscape() && this.player.size >= level.requiredSize) {
+      this.exitZone.setFillStyle(0x00ff00, 0.3);
+      this.exitZone.setStrokeStyle(3, 0x00ff00);
+      this.exitText.setText('EXIT');
+      this.exitText.setColor('#00ff00');
+    } else {
+      this.exitZone.setFillStyle(0xff0000, 0.3);
+      this.exitZone.setStrokeStyle(3, 0xff0000);
+      this.exitText.setText('LOCKED');
+      this.exitText.setColor('#ff0000');
+    }
   }
 }
